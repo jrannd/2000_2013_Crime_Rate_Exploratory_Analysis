@@ -1,2 +1,2 @@
 # 2000_2013_Crime_Rate_Exploratory_Analysis
-Exploring the violent crime rate in California from 2000-2013
+In this project I explore the violent crime rate in California from 2000-2013. We view the crime rate at several levels, from state down to city level. Additionaly we run hypothesis test to view if the violent crme rate between the cities with some of the highest crime rates to see if there is any statistical significance between the cities. We found that between Oakland, Compton, and Stockton -- Oakland and Compton's crime rates were statistically significantly higher than Stockton's during this time period. All three cities were medium to large in population and in the top 5 of crime rate in the state from 2000-2013.
