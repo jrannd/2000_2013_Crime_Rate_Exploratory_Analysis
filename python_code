@@ -57,7 +57,8 @@ x = df['ind_definition'].unique()
 y = df['ind_id'].unique()
 print(x,y)
 
-"""Drop above columns, we know this is a data set that shows Number of Violent Crimes per 1,000 Population. ind_id is not any sort of index and does not have a purpose for exploring this dataset."""
+"""Drop above columns, we know this is a data set that shows Number of Violent Crimes per 
+1,000 Population. ind_id is not any sort of index and does not have a purpose for exploring this dataset."""
 
 #including version number in this as well since it is in the df_original if we ever need to refernece.
 df.drop(columns=['ind_definition', 'ind_id', 'version'], inplace = True)
@@ -73,12 +74,16 @@ location_df.head()
 
 location_df[(location_df['county_fips'].isnull()) & (location_df['county_name'].isnull()) & (location_df['region_code'].isnull()) & (location_df['region_name'].isnull())]
 
-"""Above we can see that the only time there is no location data in the columns county_fips, county name, region code, and region name is when the geoname is California. This is showing that there is state level aggregations of each crime per year. This also explaiins why there are 70 null values in region_name. I will look to see if there are aggregations at the lower level like regional aggregations."""
+"""Above we can see that the only time there is no location data in the columns county_fips, county name, region code, and region_name 
+is when the geoname is California. This is showing that there is state level aggregations of each crime per year. 
+This also explaiins why there are 70 null values in region_name. I will look to see if there are aggregations at the lower level like regional aggregations."""
 
 # see if any data is returned when county fips is NOT null, while county_name, region_code and region_name ARE null
 location_df[(location_df['county_fips'].notnull()) & (location_df['county_name'].isnull()) & (location_df['region_code'].isnull()) & (location_df['region_name'].isnull())]
 
-"""When county_fips is not null and the remainder of columns are null, we yield no results meaning when county_fips has values we will see values in count_name, region_code, and region_name. Lets test this below. We will adjust one column at a time to include notnull() until all columns have notnull()"""
+"""When county_fips is not null and the remainder of columns are null, we yield no results meaning when 
+county_fips has values we will see values in count_name, region_code, and region_name. Lets test this below. 
+We will adjust one column at a time to include notnull() until all columns have notnull()"""
 
 # when we try to see the location df where county_fips and county_name don't have null values but region_code and region_name have null values, we get no output.
 
@@ -92,9 +97,11 @@ location_df[(location_df['county_fips'].notnull()) & (location_df['county_name']
 
 location_df[(location_df['county_fips'].notnull()) & (location_df['county_name'].notnull()) & (location_df['region_code'].notnull()) & (location_df['region_name'].notnull())]
 
-"""When our county_fips column contains no null values, no  California aggregate numbers are present and we have complete data in the county_name, region_code, and region_name columns.
+"""When our county_fips column contains no null values, no  California aggregate numbers are present and we have complete data in the 
+county_name, region_code, and region_name columns
 
-Why are there nulls in the fips and county name? Let us explore
+
+""Why are there nulls in the fips and county name? Let us explore
 """
 
 # view df where county_fips and county_name contain null values
@@ -121,7 +128,11 @@ df.loc[3326]
 
 df[(df['county_fips'] == 06007.0)].head(1)
 
-"""After the above steps we see that when the county_fips, county_name are null it is because we are looking at an aggregate view of crimes at the regional level, (geotype = 'RE'). Butte is one of the few regions in this table where the only county is Butte. At the regional level, Butte has a numerator of 475 for aggrevated assult in 2000 and when we call the county specific data, we can see that the numerator for aggrevated assult matches 475 in year 2000. Thus proving we have aggregations at state, regional, and county level. We can also reasonably assume that the nulls in the location specific columns are harmless and do not need to be removed.
+"""After the above steps we see that when the county_fips, county_name are null it is because we are looking at an aggregate view of crimes at the regional level, 
+(geotype = 'RE'). Butte is one of the few regions in this table where the only county is Butte. At the regional level, Butte has a numerator of 475 for aggrevated assult in 2000
+and when we call the county specific data, we can see that the numerator for aggrevated assult matches 475 in year 2000. 
+Thus proving we have aggregations at state, regional, and county level. We can also reasonably assume that the nulls in the location specific columns 
+are harmless and do not need to be removed.
 
 Rename one of the reported crimes into something less graphic for viewers
 """
@@ -142,7 +153,8 @@ df['strata_level_name'] = df['strata_level_name'].replace('Forcible rape', 'Sexu
 # double check that the violent crime name changed.
 df.iloc[0:5,0:18]
 
-"""While changing the value of one of the crimes I noticed that there was a value named: Jurisdiction does not report. Lets dive deeper into this and see if we can drop these values"""
+"""While changing the value of one of the crimes I noticed that there was a value named: Jurisdiction does not report. 
+Lets dive deeper into this and see if we can drop these values"""
 
 df['strata_level_name'].unique()
 
@@ -204,7 +216,8 @@ df[(df['geotype'] == 'CA') & (df['reportyear'] == 2000)]
 
 df['numerator'].fillna(0, inplace = True)
 
-"""Since our violent crime totals seem to be off, we need to correctly add up the numerator colum so that the violent crime total is equal to all the recorded crimes that come before it."""
+"""Since our violent crime totals seem to be off, we need to correctly add up the numerator colum so that the violent crime total is equal 
+to all the recorded crimes that come before it."""
 
 # Create a copy of df to work on
 df_fixed = df.copy()
@@ -435,7 +448,8 @@ plt.title('California State Population from 2000-2013')
 plt.legend()
 plt.show()
 
-"""Not only did the number of violent crimes per year reduce, California's population per year increased as well. Effectively making the violent crime rate per 1000 lower. Perhaps there was legislation passed around the year of 2001 as that is when the decrease of violent crime starts to occur."""
+"""Not only did the number of violent crimes per year reduce, California's population per year increased as well. Effectively making the violent crime rate per 1000 lower. 
+Perhaps there was legislation passed around the year of 2001 as that is when the decrease of violent crime starts to occur."""
 
 # Now look at each crime type over the years. First make a df that exludes the totals
 df_no_total = df[(df['strata_level_name_code'] != 5) & (df['geoname'] == 'California') & df['county_fips'].isnull()]
@@ -448,7 +462,9 @@ for name,group in df_no_total.groupby('strata_level_name'):
 plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
 plt.show()
 
-"""Aggrevated assault and robery decreased over time while others remained relatively the same at a low rate. Interestingly enough robberies increased from 2005-20006 and remained at a similar rate until 2008 where it began to drop again. The great recession was from 2007 - 2009 and our data shows crime generally fell during the great recession."""
+"""Aggrevated assault and robery decreased over time while others remained relatively the same at a low rate. Interestingly enough robberies increased from 
+2005-20006 and remained at a similar rate until 2008 where it began to drop again. The great recession was from 2007 - 2009 and our data shows crime generally fell 
+during the great recession."""
 
 # Lets view some of the regions with the highest crime rates
 
@@ -462,7 +478,8 @@ df_region.plot.hist(column='rate', by = 'region_name', figsize=(10,50))
 
 plt.show()
 
-'''because our data is not normally distributed and is heavily skewed right (on aggregate), our best measure of center would be the median. next we will find the median of the 'violent crime total' across all regions'''
+'''because our data is not normally distributed and is heavily skewed right (on aggregate), our best measure of center would be the median. 
+next we will find the median of the 'violent crime total' across all regions'''
 
 median_region_rate = df_region[df_region['strata_level_name_code'] == 5].groupby('region_name')['rate'].median().sort_values(ascending=False)
 
@@ -484,7 +501,8 @@ plt.title('Median Violent Crime Rate per Region')
 
 plt.show()
 
-"""Based on the figure above we can see which regions had the highest median crime rate between the years of 2000-2013 where San Joaquin Valley has the most and the San Louis Obispo has the lowest."""
+"""Based on the figure above we can see which regions had the highest median crime rate between the years of 2000-2013 where San Joaquin Valley 
+has the most and the San Louis Obispo has the lowest."""
 
 '''which crimes had the highest median in  San Joaquin Valley, Southern California, and Shasta between 2000-2013?'''
 
@@ -528,7 +546,9 @@ for region in top_three:
     plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
     plt.show()
 
-"""Interestingly we can see that aggrevated assault and robery follow a bit of a similar trend but robbery happens at a lower rate. We also see that in SJV those two crimes hardly decreased over time compared to the rest of the state. For Shasta aggrevated assult actually did the opposite and increased from 2000 to 2013. Shast also had sexual assualt rate compared to the other regions"""
+"""Interestingly we can see that aggrevated assault and robery follow a bit of a similar trend but robbery happens at a lower rate. 
+We also see that in SJV those two crimes hardly decreased over time compared to the rest of the state. For Shasta aggrevated assult actually did the opposite 
+and increased from 2000 to 2013. Shast also had sexual assualt rate compared to the other regions"""
 
 # Now which counties are struggling with the highest rates of crime within these regions?
 
@@ -579,7 +599,8 @@ for county in top_county:
     plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
     plt.show()
 
-"""Los Angeles County followed a similar trend to state level data where aggrevated assult and robbery declined over time. Howver, Merced and San Joaquin County crime rate generally stayed the same when comparing year 2000 and year 2013 numbers. Some years were better than others but no concistent downward trending crime rate over time."""
+"""Los Angeles County followed a similar trend to state level data where aggrevated assult and robbery declined over time. Howver, Merced and San Joaquin County 
+crime rate generally stayed the same when comparing year 2000 and year 2013 numbers. Some years were better than others but no concistent downward trending crime rate over time."""
 
 # Lets look at which cities in these counties have the highest crime rates
 
@@ -620,7 +641,10 @@ for city in top_city:
     plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
     plt.show()
 
-"""although Compton's robbery and aggravated assults were high, they have generally decreased since 2000 but picking up in 2013. Stockton on the other hand did not show much change in crime rate as the it seems to be a similar start and end at similar rates. Irwindale is erratic, most likely due to a smaller population (in the thousands) but showed high crime rates during certain years. Interestingly, in Irwindale, robber, murder/NNM, and sexual assault happened at the same rate in 2011."""
+"""although Compton's robbery and aggravated assults were high, they have generally decreased since 2000 but picking up in 2013. 
+Stockton on the other hand did not show much change in crime rate as the it seems to be a similar start and end at similar rates. 
+Irwindale is erratic, most likely due to a smaller population (in the thousands) but showed high crime rates during certain years. 
+Interestingly, in Irwindale, robber, murder/NNM, and sexual assault happened at the same rate in 2011."""
 
 # see where stockton and compton compare to the rest of our data
 
@@ -642,7 +666,8 @@ plt.barh(x.index, x.values)
 plt.xlabel('Crime rate per 1000')
 plt.ylabel('City')
 
-"""Stockton and compton both make the top 5, but oakland comes in at #1. Emeryville is just noth of oakland which could explain the higher crime rate as there could be spill over. Sand City however has a high crime rate but their population is very low compared to the others on this list.
+"""Stockton and compton both make the top 5, but oakland comes in at #1. Emeryville is just noth of oakland which could explain the higher crime rate 
+as there could be spill over. Sand City however has a high crime rate but their population is very low compared to the others on this list.
 
 # Hypothesis Testing
 """
@@ -668,7 +693,8 @@ if p_value < 0.05:
 else:
     print(f'The p-value is {p_value:.6}, meaning there is not enough statistical evidence to prove a difference between groups. Thus, we fail to reject the null hypothesis.')
 
-"""We do not have enough evidence to reject the null hypothesis of southern california's crime rate is the same as the bay area's crime rate. This means that the two regions actually do have similar crime rates and any observed differences between the two are not statistically significant."""
+"""We do not have enough evidence to reject the null hypothesis of southern california's crime rate is the same as the bay area's crime rate. 
+This means that the two regions actually do have similar crime rates and any observed differences between the two are not statistically significant."""
 
 # what about comparing cities from our graph above? lets compare some of the biggest counties to each other. Oakland, Stockton, and Compton
 
@@ -694,7 +720,8 @@ if pvalue < 0.05:
 else:
     print(f'The p-value is {pvalue:.6}, meaning there is not enough statistical evidence to prove a difference between groups. Thus, we fail to reject the null hypothesis.')
 
-"""After doing the Kruskal-Wallis test we found that there is a statistical significance between two of the group's medians, allowing us to reject the null hypothesis in favor of the alternative hypothesis. The crime rate across the three counties are differtent. But which county is different? We will explore below."""
+"""After doing the Kruskal-Wallis test we found that there is a statistical significance between two of the group's medians, allowing us to reject the null hypothesis
+in favor of the alternative hypothesis. The crime rate across the three counties are differtent. But which county is different? We will explore below."""
 
 # we can determine which group is different from the others with a post hoc test.
 
@@ -708,11 +735,14 @@ data = [oak,stkt,comp]
 # run post hoc analysis
 sp.posthoc_dunn(data)
 
-"""In the above table, group 1 is Oakland, group 2 is Stocton, and group 3 is Compton. We see that Oakland's adjusted p- vlaue is different than Stockton's (less than 0.05) and Compton's's is different than Stockton's. This means Oakland and Compton have statistically different crime rates when compared to Stockton's."""
+"""In the above table, group 1 is Oakland, group 2 is Stocton, and group 3 is Compton. We see that Oakland's adjusted p- vlaue is different than Stockton's (less than 0.05) 
+and Compton's's is different than Stockton's. This means Oakland and Compton have statistically different crime rates when compared to Stockton's."""
 
 print(f'Oakland: {oak.mean():.4f}')
 print(f'Stockton: {stkt.mean():.4f}')
 print(f'Compton: {comp.mean():.4f}')
 
-"""The above medians help give more context. Oakland and Compton have similar crime rates while Stockton's is lower. Putting everything together we can see there is less crime in Stockton than the other two counties, less enough that it is statistically significant and not due to random chance."""
+"""The above medians help give more context. Oakland and Compton have similar crime rates while Stockton's is lower. 
+Putting everything together we can see there is less crime in Stockton than the other two counties, less enough that it is 
+statistically significant and not due to random chance."""
 
